@@ -565,6 +565,8 @@ control the compilation:
 - libpath: the path to store the binary. Defaults to a temporary path.
 - compiler: which C compiler to use. Defaults to :gcc, which is currently the
   only available option.
+
+Edited to work with the eigen3 package in C++.
 """
 function _build_function(target::CTarget, ex::AbstractArray, args...;
                          columnmajor = true,
@@ -601,10 +603,10 @@ function _build_function(target::CTarget, ex::AbstractArray, args...;
         end
     end
 
-    argstrs = join(vcat("double* $(lhsname)",[typeof(args[i])<:AbstractArray ? "const double* $(rhsnames[i])" : "const double $(rhsnames[i])" for i in 1:length(args)]),", ")
+    argstrs = join(vcat("Eigen::VectorXd& $(lhsname)",[typeof(args[i])<:AbstractArray ? "const Eigen::VectorXd& $(rhsnames[i])" : "const Eigen::VectorXd& $(rhsnames[i])" for i in 1:length(args)]),", ")
 
     ccode = """
-    #include <math.h>
+    #include <Eigen/Core>
     void $fname($(argstrs...)) {$([string("\n  ", eqn) for eqn ∈ equations]...)\n}
     """
 
