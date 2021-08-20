@@ -606,7 +606,7 @@ function _build_function(target::CTarget, ex::AbstractArray, args...;
     argstrs = join(vcat("Eigen::VectorXd& $(lhsname)",[typeof(args[i])<:AbstractArray ? "const Eigen::VectorXd& $(rhsnames[i])" : "const Eigen::VectorXd& $(rhsnames[i])" for i in 1:length(args)]),", ")
 
     ccode = """
-    #include <Eigen/Core>
+    #include "$fname.h"\n 
     void $fname($(argstrs...)) {$([string("\n  ", eqn) for eqn ∈ equations]...)\n}
     """
 
