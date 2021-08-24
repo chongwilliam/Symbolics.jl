@@ -594,7 +594,8 @@ function _build_function(target::CTarget, ex::AbstractArray, args...;
     equations = Vector{String}()
     for col ∈ 1:size(ex,2)
         for row ∈ 1:size(ex,1)
-            lhs = string(lhsname, "[", (col-1) * size(ex,1) + row-1, "]")
+            # lhs = string(lhsname, "[", (col-1) * size(ex,1) + row-1, "]")
+            lhs = string(lhsname, "(", (row-1), (col-1), ")")
             rhs = numbered_expr(value(ex[row, col]), varnumbercache, args...;
                                 lhsname  = lhsname,
                                 rhsnames = rhsnames,
@@ -603,10 +604,10 @@ function _build_function(target::CTarget, ex::AbstractArray, args...;
         end
     end
 
-    argstrs = join(vcat("Eigen::VectorXd& $(lhsname)",[typeof(args[i])<:AbstractArray ? "const Eigen::VectorXd& $(rhsnames[i])" : "const Eigen::VectorXd& $(rhsnames[i])" for i in 1:length(args)]),", ")
+    argstrs = join(vcat("Eigen::MatrixXd& $(lhsname)",[typeof(args[i])<:AbstractArray ? "const Eigen::VectorXd& $(rhsnames[i])" : "const Eigen::VectorXd& $(rhsnames[i])" for i in 1:length(args)]),", ")
 
     ccode = """
-    #include "$fname.h"\n 
+    #include "$fname.h"\n
     void $fname($(argstrs...)) {$([string("\n  ", eqn) for eqn ∈ equations]...)\n}
     """
 
