@@ -595,7 +595,7 @@ function _build_function(target::CTarget, ex::AbstractArray, args...;
     for col ∈ 1:size(ex,2)
         for row ∈ 1:size(ex,1)
             # lhs = string(lhsname, "[", (col-1) * size(ex,1) + row-1, "]")
-            lhs = string(lhsname, "(", (row-1), (col-1), ")")
+            lhs = string(lhsname, "(", (row-1), ",", (col-1), ")")
             rhs = numbered_expr(value(ex[row, col]), varnumbercache, args...;
                                 lhsname  = lhsname,
                                 rhsnames = rhsnames,
