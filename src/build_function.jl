@@ -551,6 +551,7 @@ function _build_function(target::CTarget, ex::AbstractArray, args...;
                          conv        = toexpr,
                          expression  = Val{true},
                          fname       = :diffeqf,
+                         hname       = :diffeqf,  # include header file name
                          lhsname     = :du,
                          rhsnames    = [Symbol("RHS\$i") for i in 1:length(args)],
                          libpath     = tempname(),
@@ -573,6 +574,7 @@ function _build_function(target::CTarget, ex::AbstractArray, args...;
                          conv        = toexpr,
                          expression  = Val{true},
                          fname       = :diffeqf,
+                         hname       = :diffeqf,
                          lhsname     = :du,
                          rhsnames    = [Symbol("RHS$i") for i in 1:length(args)],
                          libpath     = tempname(),
@@ -607,7 +609,7 @@ function _build_function(target::CTarget, ex::AbstractArray, args...;
     argstrs = join(vcat("Eigen::MatrixXd& $(lhsname)",[typeof(args[i])<:AbstractArray ? "const Eigen::VectorXd& $(rhsnames[i])" : "const Eigen::VectorXd& $(rhsnames[i])" for i in 1:length(args)]),", ")
 
     ccode = """
-    #include "$fname.h"\n
+    #include "$hname.h"\n
     void $fname($(argstrs...)) {$([string("\n  ", eqn) for eqn ∈ equations]...)\n}
     """
 
